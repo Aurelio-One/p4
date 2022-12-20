@@ -26,7 +26,14 @@ function closeModal() {
 }
 
 // form validation
-function validate(e) {
+const form = document.getElementById("reserveForm");
+
+//// event listener for the form submission
+form.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  //// actual validation
+
   const firstNameInput = document.getElementById("first").value;
   const lastNameInput = document.getElementById("last").value;
   const emailInput = document.getElementById("email").value;
@@ -40,6 +47,7 @@ function validate(e) {
   const location5 = document.getElementById("location5");
   const location6 = document.getElementById("location6");
   const checkbox1 = document.getElementById("checkbox1");
+  const success = document.querySelector(".success");
 
   //// reset error status
   const formDatas = document.querySelectorAll(".formData");
@@ -102,4 +110,8 @@ function validate(e) {
   if (formError) {
     return false;
   }
-}
+  success.classList.add("visible");
+  setTimeout(() => {
+    form.submit();
+  }, "2000");
+});
