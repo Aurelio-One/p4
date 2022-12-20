@@ -40,21 +40,44 @@ function validate(e) {
   const location5 = document.getElementById("location5");
   const location6 = document.getElementById("location6");
   const checkbox1 = document.getElementById("checkbox1");
+
+  //// reset error status
+  const formDatas = document.querySelectorAll(".formData");
+  for (let i = 0; i < formDatas.length; i++) {
+    formDatas[i].setAttribute("data-error-visible", "false");
+  }
   let formError = false;
 
-  if (!firstNameInput.length > 1) {
+  //// fields validation
+
+  if (firstNameInput.length < 2) {
+    document
+      .querySelector(".formData.firstName")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
-  if (!lastNameInput.length > 1) {
+  if (lastNameInput.length < 2) {
+    document
+      .querySelector(".formData.lastName")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
   if (!emailInput.match(validEmail)) {
+    document
+      .querySelector(".formData.email")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
   if (isNaN(quantityInput) || quantityInput.length === 0) {
+    document
+      .querySelector(".formData.quantity")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
   if (birthDateInput.length === 0) {
+    document
+      .querySelector(".formData.birthDate")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
   if (
@@ -65,9 +88,15 @@ function validate(e) {
     !location5.checked &&
     !location6.checked
   ) {
+    document
+      .querySelector(".formData.radioboxes")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
   if (!checkbox1.checked) {
+    document
+      .querySelector(".formData.checkbox")
+      .setAttribute("data-error-visible", "true");
     formError = true;
   }
   if (formError) {
