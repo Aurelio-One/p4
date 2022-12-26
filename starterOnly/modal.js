@@ -91,8 +91,8 @@ form.addEventListener("submit", (e) => {
     return false;
   }
   // if validation succeeds, show the success message and submit
-  document.querySelector(".success").classList.add("visible");
+  document.querySelector(".success-modal").classList.add("visible");
   setTimeout(() => {
     form.submit();
-  }, "2000");
+  }, "3000");
 });
