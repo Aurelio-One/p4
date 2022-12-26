@@ -11,6 +11,7 @@ function editNav() {
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
+const form = document.getElementById("reserveForm");
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -25,92 +26,72 @@ function closeModal() {
   modalbg.style.display = "none";
 }
 
-// form validation
-const form = document.getElementById("reserveForm");
+// function: show the error for a field
+const setError = (field) => {
+  field.parentNode.setAttribute("data-error-visible", "true");
+  formError = true;
+};
 
-//// event listener for the form submission
+// function: check if each field respect conditions, if not, show error
+const checkFields = () => {
+  // function: reset all errors
+  formData.forEach((group) => {
+    group.setAttribute("data-error-visible", "false");
+  });
+  formError = false;
+  // get all the required fields as an array
+  const requiredInputs = [
+    ...document.querySelectorAll("#reserveForm input[required]"),
+  ];
+  // checking for error for each input
+  requiredInputs.forEach((input) => {
+    if (input.getAttribute("type") === "text") {
+      // if the lentgth of a field is less than its 'minlength' attribute, show error
+      if (input.value.length < input.getAttribute("minlength")) {
+        setError(input);
+      }
+    }
+    // if the value of an email field is not formatted correctly, show error
+    if (input.getAttribute("type") === "email") {
+      if (
+        !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+          input.value
+        )
+      ) {
+        setError(input);
+      }
+    }
+    // if a required checkbox is not checked, show error
+    if (input.getAttribute("type") === "checkbox") {
+      if (!input.checked) {
+        setError(input);
+      }
+    }
+    // for all other required field; we just expect them to be filled, if not, show error
+    else {
+      if (input.value.length < 1) {
+        setError(input);
+      }
+    }
+  });
+  // checking if at least one radio button is selected
+  if (!document.querySelectorAll("input[type=radio]:checked").length > 0) {
+    setError(document.querySelector("input[type=radio]"));
+  }
+};
+
+// event listener for the form submission
 form.addEventListener("submit", (e) => {
+  // stop the regular form behavior
   e.preventDefault();
-
-  //// actual validation
-
-  const firstNameInput = document.getElementById("first").value;
-  const lastNameInput = document.getElementById("last").value;
-  const emailInput = document.getElementById("email").value;
-  const validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  const birthDateInput = document.getElementById("birthdate").value;
-  const quantityInput = document.getElementById("quantity").value;
-  const location1 = document.getElementById("location1");
-  const location2 = document.getElementById("location2");
-  const location3 = document.getElementById("location3");
-  const location4 = document.getElementById("location4");
-  const location5 = document.getElementById("location5");
-  const location6 = document.getElementById("location6");
-  const checkbox1 = document.getElementById("checkbox1");
-  const success = document.querySelector(".success");
-
-  //// reset error status
-  const formDatas = document.querySelectorAll(".formData");
-  for (let i = 0; i < formDatas.length; i++) {
-    formDatas[i].setAttribute("data-error-visible", "false");
-  }
-  let formError = false;
-
-  //// fields validation
-
-  if (firstNameInput.length < 2) {
-    document
-      .querySelector(".formData.firstName")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
-  if (lastNameInput.length < 2) {
-    document
-      .querySelector(".formData.lastName")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
-  if (!emailInput.match(validEmail)) {
-    document
-      .querySelector(".formData.email")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
-  if (isNaN(quantityInput) || quantityInput.length === 0) {
-    document
-      .querySelector(".formData.quantity")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
-  if (birthDateInput.length === 0) {
-    document
-      .querySelector(".formData.birthDate")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
-  if (
-    !location1.checked &&
-    !location2.checked &&
-    !location3.checked &&
-    !location4.checked &&
-    !location5.checked &&
-    !location6.checked
-  ) {
-    document
-      .querySelector(".formData.radioboxes")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
-  if (!checkbox1.checked) {
-    document
-      .querySelector(".formData.checkbox")
-      .setAttribute("data-error-visible", "true");
-    formError = true;
-  }
+  // fields validation
+  checkFields();
+  // if validation fails, stop the submitting
   if (formError) {
     return false;
   }
-  success.classList.add("visible");
+  // if validation succeeds, show the success message and submit
+  document.querySelector(".success").classList.add("visible");
   setTimeout(() => {
     form.submit();
   }, "2000");
