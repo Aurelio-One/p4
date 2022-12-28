@@ -11,7 +11,7 @@ function editNav() {
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
 const formData = document.querySelectorAll(".formData");
-const form = document.getElementById("reserveForm");
+const form = document.querySelector("form");
 
 // launch modal event
 modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
@@ -32,51 +32,68 @@ const setError = (field) => {
   formError = true;
 };
 
-// function: check if each field respect conditions, if not, show error
-const checkFields = () => {
+// function: validate all fields before subtmitting the form
+const validate = () => {
   // function: reset all errors
-  formData.forEach((group) => {
-    group.setAttribute("data-error-visible", "false");
+  formData.forEach((formdata) => {
+    formdata.setAttribute("data-error-visible", "false");
   });
   formError = false;
-  // get all the required fields as an array
-  const requiredInputs = [
-    ...document.querySelectorAll("#reserveForm input[required]"),
-  ];
-  // checking for error for each input
-  requiredInputs.forEach((input) => {
-    if (input.getAttribute("type") === "text") {
-      // if the lentgth of a field is less than its 'minlength' attribute, show error
-      if (input.value.length < input.getAttribute("minlength")) {
-        setError(input);
-      }
-    }
-    // if the value of an email field is not formatted correctly, show error
-    if (input.getAttribute("type") === "email") {
-      if (
-        !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-          input.value
-        )
-      ) {
-        setError(input);
-      }
-    }
-    // if a required checkbox is not checked, show error
-    if (input.getAttribute("type") === "checkbox") {
-      if (!input.checked) {
-        setError(input);
-      }
-    }
-    // for all other required field; we just expect them to be filled, if not, show error
-    else {
-      if (input.value.length < 1) {
-        setError(input);
-      }
-    }
+  //check for fields validity
+  //// create a map with fields to check tied to the validation function that needs to be run
+  const validation = new Map([
+    [document.getElementById("first"), validLength],
+    [document.getElementById("last"), validLength],
+    [document.getElementById("email"), validEmail],
+    [document.getElementById("birthdate"), validDate],
+    [document.getElementById("quantity"), validNumber],
+    [document.getElementById("checkbox1"), validChecked],
+    [[...document.querySelectorAll(`[id^="location"]`)], validSelected],
+  ]);
+  //// for each key of the map, run the function set as the key
+  validation.forEach((key, value) => {
+    key(value);
   });
-  // checking if at least one radio button is selected
-  if (!document.querySelectorAll("input[type=radio]:checked").length > 0) {
-    setError(document.querySelector("input[type=radio]"));
+};
+
+// function: check if the length of an input value is at least 2 characters
+const validLength = (input) => {
+  if (input.value.length < 2) {
+    setError(input);
+  }
+};
+// function: check if an email is formatted correctly
+const validEmail = (input) => {
+  if (
+    !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+      input.value
+    )
+  ) {
+    setError(input);
+  }
+};
+// function: check if a date is formatted correctly
+const validDate = (input) => {
+  if (isNaN(Date.parse(input.value))) {
+    setError(input);
+  }
+};
+// function: check if an input value is a number
+const validNumber = (input) => {
+  if (isNaN(input.value) || input.value.length === 0) {
+    setError(input);
+  }
+};
+// function: check if the checkbox is checked
+const validChecked = (input) => {
+  if (!input.checked) {
+    setError(input);
+  }
+};
+// function: check if the at least one radio button is selected
+const validSelected = (group) => {
+  if (group.every((input) => !input.checked)) {
+    setError(group[0]);
   }
 };
 
@@ -85,12 +102,12 @@ form.addEventListener("submit", (e) => {
   // stop the regular form behavior
   e.preventDefault();
   // fields validation
-  checkFields();
+  validate();
   // if validation fails, stop the submitting
   if (formError) {
     return false;
   }
-  // if validation succeeds, show the success message and submit
+  // if validation succeeds, show the success message and submit after 3sec
   document.querySelector(".success-modal").classList.add("visible");
   setTimeout(() => {
     form.submit();
