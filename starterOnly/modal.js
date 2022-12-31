@@ -1,3 +1,7 @@
+/** 
+ * @function editNav
+ * show/hide the mobile menu 
+*/
 function editNav() {
   var x = document.getElementById("myTopnav");
   if (x.className === "topnav") {
@@ -6,7 +10,6 @@ function editNav() {
     x.className = "topnav";
   }
 }
-
 // DOM Elements
 const modalbg = document.querySelector(".bground");
 const modalBtn = document.querySelectorAll(".modal-btn");
@@ -20,21 +23,27 @@ modalBtn.forEach((btn) => btn.addEventListener("click", launchModal));
 function launchModal() {
   modalbg.style.display = "block";
 }
-
 // close modal
 function closeModal() {
   modalbg.style.display = "none";
 }
 
-// function: show the error for a field
+/** 
+ * @function setError
+ * @param field
+ * show the error for a field
+ */
 const setError = (field) => {
   field.parentNode.setAttribute("data-error-visible", "true");
   formError = true;
 };
 
-// function: validate all fields before subtmitting the form
+/** 
+ * @function validate
+ * validate all fields before subtmitting the form
+ */
 const validate = () => {
-  // function: reset all errors
+  // reset all errors
   formData.forEach((formdata) => {
     formdata.setAttribute("data-error-visible", "false");
   });
@@ -48,7 +57,6 @@ const validate = () => {
     [document.getElementById("birthdate"), validDate],
     [document.getElementById("quantity"), validNumber],
     [document.getElementById("checkbox1"), validChecked],
-    [[...document.querySelectorAll(`[id^="location"]`)], validSelected],
   ]);
   //// for each key of the map, run the function set as the key
   validation.forEach((key, value) => {
@@ -56,44 +64,58 @@ const validate = () => {
   });
 };
 
-// function: check if the length of an input value is at least 2 characters
+/** 
+ * @function validLength
+ * @param input
+ * check if the length of an input value is at least 2 characters
+ */
 const validLength = (input) => {
   if (input.value.length < 2) {
     setError(input);
   }
 };
-// function: check if an email is formatted correctly
+
+/** 
+ * @function validEmail
+ * @param input
+ * check if an email is formatted correctly
+ */
 const validEmail = (input) => {
-  if (
-    !/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
-      input.value
-    )
-  ) {
+  if (!/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/.test(input.value)) {
     setError(input);
   }
 };
-// function: check if a date is formatted correctly
+
+/**
+ * @function validDate
+ * @param input
+ * check if a date is formatted correctly
+ */
 const validDate = (input) => {
   if (isNaN(Date.parse(input.value))) {
     setError(input);
   }
 };
-// function: check if an input value is a number
+
+/**
+ * @function validNumber
+ * @param input
+ * check if an input value is a number
+ */
 const validNumber = (input) => {
-  if (isNaN(input.value) || input.value.length === 0) {
+  if (!/\d+/.test(input.value)) {
     setError(input);
   }
 };
-// function: check if the checkbox is checked
+
+/** 
+ * @function validChecked
+ * @param input
+ * check if the checkbox is checked
+ */
 const validChecked = (input) => {
   if (!input.checked) {
     setError(input);
-  }
-};
-// function: check if the at least one radio button is selected
-const validSelected = (group) => {
-  if (group.every((input) => !input.checked)) {
-    setError(group[0]);
   }
 };
 
@@ -107,9 +129,6 @@ form.addEventListener("submit", (e) => {
   if (formError) {
     return false;
   }
-  // if validation succeeds, show the success message and submit after 3sec
+  // if validation succeeds, show the success message
   document.querySelector(".success-modal").classList.add("visible");
-  setTimeout(() => {
-    form.submit();
-  }, "3000");
 });
